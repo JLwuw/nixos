@@ -1,0 +1,14 @@
+# TERN
+store.db-shm
+store.db-wal
+/docs/pandoc-templates/docs.css
+/docs/pandoc-templates/docs.html
+# FLAGS
+lanzaboote-enabled
+facter.json
+# MISC
+/misc/
+# SYNCTHING
+.stfolder/
+# CLAUDE
+/.claude/
