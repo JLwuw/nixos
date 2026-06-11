@@ -1,12 +1,9 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
-  isWorkstation = builtins.elem config.networking.hostName [ "desktop" "laptop" ];
-
-  # Map hostname to secrets file location
-  secretsFile = {
-    laptop = ../../hosts/laptop/secrets/secrets.yaml;
-  }.${config.networking.hostName};
+  secretsFile = ./../../hosts/laptop/secrets/secrets.yaml;
 in {
+  environment.systemPackages = [ pkgs.sops ];
+
   sops = {
     defaultSopsFormat = "yaml";
     defaultSopsFile = secretsFile;

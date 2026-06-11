@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 {
   home-manager.users.user = {
     programs.mpv = {
@@ -50,5 +50,7 @@
         };
       };
     };
+
+    home.packages = [ pkgs.yt-dlp ];
   };
 }

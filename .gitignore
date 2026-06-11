@@ -12,3 +12,6 @@ facter.json
 .stfolder/
 # CLAUDE
 /.claude/
+# OPENCODE
+opencode.json
+.tern/

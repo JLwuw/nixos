@@ -1,26 +1,24 @@
-{ pkgs, ... }:
+{ pkgs, lib, bootstrap ? false, ... }:
 let
-  pkgBundle = import ../../../values/package-bundle.nix { inherit pkgs; };
+  corePkgs = import ../../../values/packages/core.nix { inherit pkgs; };
+  workstationPkgs =
+    if bootstrap then
+      { systemPackages = [ ]; homePackages = [ ]; }
+    else
+      import ../../../values/packages/workstation.nix { inherit pkgs; };
 in
 {
-  # ===========================================================================
-  # System packages (environment.systemPackages)
-  # ===========================================================================
   environment.systemPackages =
-    with pkgs;
-    [
-      brightnessctl
-      bluez
-      bluez-tools
-    ]
-    ++ pkgBundle.systemPackages
-    ++ pkgBundle.workstationSystemPackages;
+    (with pkgs; [
+      brightnessctl # backlight/brightness control
+      bluez # Bluetooth stack
+      bluez-tools # Bluetooth management tools
+    ])
+    ++ corePkgs.systemPackages
+    ++ workstationPkgs.systemPackages;
   fonts.packages = with pkgs; [ terminus_font ];
 
-  # ===========================================================================
-  # Home packages (home-manager)
-  # ===========================================================================
   home-manager.users.user = {
-    home.packages = [ ] ++ pkgBundle.homePackages ++ pkgBundle.workstationHomePackages;
+    home.packages = workstationPkgs.homePackages;
   };
 }

@@ -17,7 +17,6 @@
     ];
   };
 
-  # Enable scanner support
   hardware.sane = {
     enable = true;
     extraBackends = with pkgs; [
@@ -36,4 +35,16 @@
   #   allowedTCPPorts = [ 631 ];  # CUPS
   #   allowedUDPPorts = [ 631 ];  # CUPS discovery
   # };
+
+  home-manager.users.user.home.packages = with pkgs; [
+    system-config-printer # printer configuration GUI
+    simple-scan # document scanning GUI
+  ];
+
+  # Persist CUPS printer state
+  # Only persist /var/lib/cups (contains mutable state: printers, jobs, etc.)
+  # /etc/cups is managed by NixOS as a symlink to the store - don't persist it
+  environment.persistence."/persist".directories = [
+    "/var/lib/cups"
+  ];
 }

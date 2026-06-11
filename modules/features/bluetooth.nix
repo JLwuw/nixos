@@ -1,5 +1,4 @@
 { config, lib, pkgs, ... }: {
-  # Enable Bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -14,4 +13,9 @@
 
   # Bluetooth service
   services.blueman.enable = true;
+
+  # Persistence for Bluetooth pairings
+  environment.persistence."/persist".directories = [
+    "/var/lib/bluetooth"
+  ];
 }

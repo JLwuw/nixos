@@ -2,6 +2,9 @@
 {
   # Enables GVFS backend for Nemo to resolve 'nfs://' URIs.
   # Also makes it look more aesthetic, idk
+  # Thunar for Nemo bulk rename support
+  environment.systemPackages = [ pkgs.thunar ];
+
   services.gvfs = {
     enable = true;
     package = pkgs.gvfs;
