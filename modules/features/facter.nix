@@ -1,10 +1,6 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
-  hostname = config.networking.hostName;
-  facterPaths = {
-    laptop = ../../hosts/laptop/facter.json;
-  };
-  facterPath = facterPaths.${hostname} or (throw "Unknown host: ${hostname}");
+  facterPath = ../../hosts/laptop/facter.json;
 in {
-  config.facter.reportPath = facterPath;
+  config.facter.reportPath = lib.mkIf (builtins.pathExists facterPath) facterPath;
 }

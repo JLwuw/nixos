@@ -1,7 +1,5 @@
 {
   pkgs,
-  hyprland-easymotion,
-  hyprland-plugins-local,
   ...
 }:
 {
@@ -34,36 +32,50 @@
 
   security.pam.services.hyprlock = { };
 
-  # Home-manager configuration for user
   home-manager.users.user = {
-    # Vicinae launcher daemon
-    programs.vicinae = {
-      enable = true;
-      systemd = {
-        enable = true;
-        autoStart = true;
-      };
-      settings = {
-        # Add any vicinae-specific settings here
-      };
-    };
+    home.packages = with pkgs; [
+      uwsm # Hyprland session wrapper
+      mako # notification daemon
+      swayosd # on-screen display for brightness/volume
+      grim # Wayland screenshot tool
+      slurp # Wayland screen area selector
+      grimblast # grim + slurp convenience wrapper
+      pyprland # Hyprland plugins and utilities (magnify zoom)
+      gromit-mpx # on-screen annotation/drawing tool
+      wl-clipboard # Wayland clipboard utilities (wl-copy, wl-paste)
+      hyprpicker # Hyprland color picker
+    ];
+
+    xdg.configFile."pypr/config.toml".text = ''
+      [pyprland]
+      plugins = ["magnify"]
+
+      [magnify]
+      factor = 2
+    '';
+
+    xdg.configFile."gromit-mpx.ini".text = ''
+      [General]
+      ShowIntroOnStartup=false
+
+      [Drawing]
+      Opacity=0.75
+    '';
 
     wayland.windowManager.hyprland = {
       enable = true;
       systemd.enable = true;
+      configType = "hyprlang"; # Lua mode broken in HM 26.05 (hyphenated keys)
       plugins = [
-        (pkgs.hyprlandPlugins.hyprfocus.overrideAttrs (_: {
-          src = "${hyprland-plugins-local}/hyprfocus";
-        }))
-        # hyprland-easymotion pending upstream fix for 0.52 compat
+        pkgs.hyprlandPlugins.hyprfocus
       ];
       settings = {
         "$terminal" = "kitty";
         "$fileManager" = "nemo";
         "$browser" = "librewolf";
-        "$music" = "spotify"; # or whatever you use
-        "$messenger" = "discord"; # or whatever you use
-        "$passwordManager" = "keepassxc"; # or whatever you use
+        "$music" = "spotify";
+        "$messenger" = "discord";
+        "$passwordManager" = "keepassxc";
         # Environment variables
         env = [
           "WAYLAND_DISPLAY,wayland-1"
@@ -99,9 +111,10 @@
         exec-once = [
           "hyprlock" # Lock immediately for remote access security
           "uwsm app -- mako"
-          # "uwsm app -- waybar"  # Replaced with ironbar
           "uwsm app -- ironbar"
           "uwsm app -- swayosd-server"
+          "uwsm app -- gromit-mpx --key none"
+          "uwsm app -- pypr"
         ];
 
         # General settings
@@ -120,7 +133,6 @@
         # @source: https://github.com/hyprwm/Hyprland/discussions/12829
         # Prevents washed out colors in certain programs on fullscreen (e.g. mpv)
         render = {
-          cm_fs_passthrough = 0;
           cm_auto_hdr = 0;
         };
 
@@ -172,6 +184,7 @@
             "fadeLayersIn,1,1.79,almostLinear"
             "fadeLayersOut,1,1.39,almostLinear"
             "workspaces,0,0,ease"
+            "zoomFactor,1,4,easeInOutCubic"
             "hyprfocusIn,1,1.7,easeOutQuint"
             "hyprfocusOut,1,1.7,easeOutQuint"
           ];
@@ -179,7 +192,6 @@
 
         # Dwindle layout
         dwindle = {
-          pseudotile = true;
           preserve_split = true;
           force_split = 2;
         };
@@ -202,16 +214,11 @@
           no_hardware_cursors = true;
         };
 
-        # Input settings (from Awesome config)
+        # Input settings
         input = {
-          # OLD CONFIG (pre-Awesome migration):
-          # kb_options = "compose:caps";
-          # repeat_rate = 40;
-
-          # NEW CONFIG (Awesome-style):
           kb_layout = "es"; # Spanish keyboard layout
           kb_options = "caps:swapescape"; # Swap Caps Lock and Escape
-          repeat_rate = 50; # Key repeat rate (from awesome: xset r rate 300 50)
+          repeat_rate = 50; # Key repeat rate
           repeat_delay = 300; # Key repeat delay
           numlock_by_default = true;
 
@@ -232,113 +239,33 @@
           };
         };
 
-        # Window rules
-        windowrule = [
-          "suppressevent maximize,class:.*"
-          "opacity 0.97 0.9,class:.*"
-          "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
-          "scrolltouchpad 1.5,class:(Alacritty|kitty)"
-          "scrolltouchpad 0.2,class:com.mitchellh.ghostty"
-        ];
-
-        # Window rules v2 (advanced format)
-        windowrulev2 = [
-          # Disable blur for popup/context menus (empty class/title - Electron apps)
-          "noblur,class:^()$,title:^()$"
-          # Reset opacity to prevent global rule interference
-          "opacity 1.0 override,class:^()$,title:^()$"
-
-          # Open-LLM-VTuber pet mode (XWayland fallback: class=open-llm-vtuber)
-          "noblur,class:^(open-llm-vtuber)$"
-          "noshadow,class:^(open-llm-vtuber)$"
-          "opacity 1.0 override,class:^(open-llm-vtuber)$"
-          "float,class:^(open-llm-vtuber)$"
-          "pin,class:^(open-llm-vtuber)$"
-          # Open-LLM-VTuber pet mode (native Wayland: class=electron, title=Open-LLM-Vtuber)
-          "noblur,class:^(electron)$,title:^(Open-LLM-Vtuber)$"
-          "noshadow,class:^(electron)$,title:^(Open-LLM-Vtuber)$"
-          "opacity 1.0 override,class:^(electron)$,title:^(Open-LLM-Vtuber)$"
-          "float,class:^(electron)$,title:^(Open-LLM-Vtuber)$"
-          "pin,class:^(electron)$,title:^(Open-LLM-Vtuber)$"
-
-          # ANKI
-          "opacity 1.0 override,class:^(net.ankiweb.Anki)$"
-          # Float any Anki window IF its title does NOT end with "Anki"
-          "float,class:^(net.ankiweb.Anki)$,title:negative:.*Anki$"
-        ];
+        # Window rules moved to extraConfig (block format required by 0.55+)
 
         # Key bindings
         bind = [
           # App launcher
-          # OLD: "SUPER,SPACE,exec,rofi -show drun -show-icons"
-          # OLD: "SUPER,SPACE,exec,wofi --show drun"
           "SUPER,SPACE,exec,vicinae toggle"
           "SUPER SHIFT,w,exec,vicinae deeplink windows"
 
           # Applications (SUPER + key)
           "SUPER,return,exec,$terminal"
 
-          # OLD APPLICATION BINDINGS (pre-Awesome migration):
-          # "SUPER,F,exec,$fileManager"
-          # "SUPER,B,exec,$browser"
-          # "SUPER,M,exec,$music"
-          # "SUPER,N,exec,$terminal -e nvim"
-          # "SUPER,T,exec,$terminal -e btop"
-          # "SUPER,D,exec,$terminal -e lazydocker"
-          # "SUPER,G,exec,$messenger"
-          # "SUPER,slash,exec,$passwordManager"
-
-          # Awesome-style prompts (using vicinae)
-          "SUPER,x,exec,vicinae deeplink shell" # Execute prompt (like awesome lua exec)
-          "SUPER,r,exec,vicinae toggle" # Run command prompt
-
-          # Action center / utilities
-          "SUPER,a,exec,notify-send 'Action Center' 'Not implemented yet'" # TODO: implement action center
-          "SUPER SHIFT,s,exec,grimblast --notify copy area"
-
-          # Scratchpad terminal
-          # "SUPER,s,exec,$terminal --class scratch"  # TODO: setup scratchpad
-
-          # Window management (Awesome-style)
-          "SUPER,c,killactive," # Close window (was SUPER+W in old config)
-          "SUPER,f,fullscreen,0" # Fullscreen (Awesome-style)
-          "SUPER SHIFT,t,pin," # Toggle keep on top (closest to awesome ontop)
+          # Window management
+          "SUPER,c,killactive," # Close window
+          "SUPER,f,fullscreen,0" # Fullscreen
+          "SUPER SHIFT,t,pin," # Toggle keep on top
           "SUPER,p,pseudo," # Pseudotile (restored)
           # "SUPER,V,togglefloating," # Toggle floating
-          "SUPER CTRL,SPACE,togglefloating," # Awesome-style floating toggle
-          "SUPER,w,fullscreen,1" # Maximize (Awesome-style, using fullscreen mode 1)
-          "SUPER,m,movetoworkspacesilent,special" # Minimize to special workspace (Awesome-style)
-
-          # OLD WINDOW MANAGEMENT (pre-Awesome migration):
-          # "SUPER,W,killactive,"
-          # "SUPER,J,togglesplit,"
-          # "SUPER,P,pseudo,"
-          # "SHIFT,F11,fullscreen,0"
-          # "ALT,F11,fullscreen,1"
+          "SUPER CTRL,SPACE,togglefloating," #Floating toggle
+          "SUPER,w,fullscreen,1" # Maximize
+          "SUPER,m,movetoworkspacesilent,special" # Minimize to special workspace
 
           # Center floating window
           "CTRL ALT,c,centerwindow,"
 
-          # Focus movement (Awesome j/k style)
-          # "SUPER,j,cyclenext," # Focus next by index
-          # "SUPER,k,cyclenext,prev" # Focus previous by index
-          # "SUPER,TAB,focuscurrentorlast," # Go back (focus history)
-
-          # OLD FOCUS MOVEMENT (pre-Awesome migration):
-          # Arrow keys:
-          # "SUPER,left,movefocus,l"
-          # "SUPER,right,movefocus,r"
-          # "SUPER,up,movefocus,u"
-          # "SUPER,down,movefocus,d"
-          # Vim keys:
-          # "SUPER,H,movefocus,l"
-          # "SUPER,L,movefocus,r"
-          # "SUPER,K,movefocus,u"
-          # "SUPER,J,movefocus,d"
-
           # Focus movement (arrow keys for workspace navigation)
-          "SUPER,left,workspace,e-1" # View previous workspace (like awesome tag)
-          "SUPER,right,workspace,e+1" # View next workspace (like awesome tag)
+          "SUPER,left,workspace,e-1" # View previous workspace
+          "SUPER,right,workspace,e+1" # View next workspace
           "SUPER,ESCAPE,workspace,previous" # Go back (workspace history)
 
           # Workspace switching (number keys)
@@ -365,12 +292,7 @@
           "SUPER SHIFT,9,movetoworkspace,9"
           "SUPER SHIFT,0,movetoworkspace,10"
 
-          # OLD WORKSPACE NAVIGATION (pre-Awesome migration):
-          # "SUPER,TAB,workspace,e+1"  # Next workspace with TAB
-          # "SUPER SHIFT,TAB,workspace,e-1"  # Previous workspace with SHIFT+TAB
-          # "SUPER CTRL,TAB,workspace,previous"  # Workspace history
-
-          # Window swapping (Awesome j/k style)
+          # Window swapping
           "SUPER CTRL,j,swapnext," # Swap with next client
           "SUPER CTRL,k,swapnext,prev" # Swap with previous client
 
@@ -386,18 +308,6 @@
           "SUPER SHIFT,k,resizeactive,0 -100"
           "SUPER SHIFT,j,resizeactive,0 100"
 
-          # OLD WINDOW RESIZING (pre-Awesome migration):
-          # "SUPER,minus,resizeactive,-100 0"
-          # "SUPER,equal,resizeactive,100 0"
-          # "SUPER SHIFT,minus,resizeactive,0 -100"
-          # "SUPER SHIFT,equal,resizeactive,0 100"
-
-          # Master/stack adjustments (commented - not directly applicable to Hyprland dwindle)
-          # "SUPER SHIFT,h,..."  # Increase number of master clients
-          # "SUPER SHIFT,l,..."  # Decrease number of master clients
-          # "SUPER CTRL,h,..."  # Increase number of columns
-          # "SUPER CTRL,l,..."  # Decrease number of columns
-
           # Layout switching (with visual feedback)
           ''SUPER SHIFT,SPACE,exec,LAYOUT=$(hyprctl getoption general:layout -j | jq -r '.str' | grep -q dwindle && echo master || echo dwindle) && hyprctl keyword general:layout $LAYOUT && notify-send 'Layout' "Switched to $LAYOUT"''
 
@@ -407,52 +317,28 @@
           # Move to master (swap with first window) - only works in master layout
           "SUPER SHIFT,return,layoutmsg,swapwithmaster"
 
-          # Urgent client jump (not directly supported, using scratchpad as alternative)
-          # "SUPER,u,..."  # Jump to urgent client
-
           # Window cycling (ALT + TAB - system-wide)
           "ALT,Tab,cyclenext"
           "ALT SHIFT,Tab,cyclenext,prev"
 
-          # OLD WINDOW CYCLING (pre-Awesome migration):
-          # "ALT,Tab,bringactivetotop"  # This was duplicate
-          # "ALT SHIFT,Tab,bringactivetotop"
-
-          # Mouse workspace scrolling
-          "SUPER,mouse_down,workspace,e+1"
-          "SUPER,mouse_up,workspace,e-1"
-
-          # Screen rotation (commented - X11 specific, use wl-randr on Wayland if needed)
-          # "SUPER CTRL,left,exec,wl-randr --output <output> --transform 90"  # Rotate left
-          # "SUPER CTRL,right,exec,wl-randr --output <output> --transform 270"  # Rotate right
-          # "SUPER CTRL,up,exec,wl-randr --output <output> --transform normal"  # Normal orientation
-          # "SUPER CTRL,down,exec,wl-randr --output <output> --transform 180"  # Upside down
 
           # System utilities
           ",XF86Calculator,exec,gnome-calculator"
 
           # Aesthetics
           ''SUPER,BACKSPACE,exec,hyprctl dispatch setprop "address:$(hyprctl activewindow -j | jq -r '.address')" opaque toggle''
-          # "SUPER ALT,b,exec,pkill -SIGUSR1 waybar"  # Toggle waybar (replaced with ironbar)
           "SUPER,B,exec,ironbar bar bar-0 toggle-visible" # Toggle ironbar
-
-          # OLD AESTHETICS (pre-Awesome migration):
-          # "SUPER SHIFT,SPACE,exec,pkill -SIGUSR1 waybar"  # Toggle waybar (moved to SUPER+ALT+b)
 
           # Notifications
           "SUPER,COMMA,exec,makoctl dismiss"
           "SUPER SHIFT,COMMA,exec,makoctl dismiss --all"
           "SUPER CTRL,COMMA,exec,makoctl mode -t do-not-disturb && makoctl mode | grep -q 'do-not-disturb' && notify-send 'Silenced notifications' || notify-send 'Enabled notifications'"
 
-          # Screenshots (Awesome-style with grim + slurp)
-          ",PRINT,exec,grimblast --notify save screen ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
-          "SHIFT,PRINT,exec,grimblast --notify save area ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png" # Screenshot selection to clipboard
-
-          # OLD SCREENSHOTS (pre-Awesome migration):
-          # ",PRINT,exec,grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot copied'"  # Selection to clipboard
-          # "SHIFT,PRINT,exec,grim -g \"$(hyprctl activewindow -j | jq -r '.at,.size' | tr -d '[]' | awk '{printf \"%d,%d %dx%d\", $1, $2, $3, $4}')\" - | wl-copy && notify-send 'Window screenshot copied'"  # Active window to clipboard
-          # "CTRL,PRINT,exec,grim - | wl-copy && notify-send 'Full screen screenshot copied'"  # Full screen to clipboard
-          # "SUPER,PRINT,exec,pkill hyprpicker || hyprpicker -a"  # Color picker
+          # Screenshots / OCR
+          "SUPER SHIFT,s,exec,grimblast --notify copy area" # Screenshot selection to clipboard
+          ",PRINT,exec,grimblast --notify save screen ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png" # Fullscreen to disk
+          "SHIFT,PRINT,exec,grimblast --notify save area ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png" # Screenshot selection to disk
+          "SUPER CTRL,s,exec,screenshot-ocr" # Screenshot → OCR → clipboard
 
           # Color picker
           "SUPER CTRL,PRINT,exec,pkill hyprpicker || hyprpicker -a"
@@ -461,25 +347,25 @@
           "SUPER,q,exec,notify-send 'Exit Menu' 'Use wlogout or similar'" # Exit popup (TODO: implement with wlogout)
           ",XF86PowerOff,exec,notify-send 'Power Menu' 'Use wlogout or similar'" # Power button
 
-          # OLD POWER MENU (pre-Awesome migration):
-          # "SUPER,ESCAPE,exec,rofi -show power-menu -modi power-menu:rofi-power-menu"
-
           # Screen Lock
           "CTRL ALT,l,exec,hyprlock"
 
           # Window Groups
           "SUPER,G,togglegroup"
 
-          # Screen zoom (Windows-style magnifier)
-          "SUPER,plus,exec,hyprctl keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float + 0.5')"
-          "SUPER,minus,exec,hyprctl keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '[.float - 0.5, 1] | max')"
-          "CTRL ALT,0,exec,hyprctl keyword cursor:zoom_factor 1"
+          # Screen zoom (middle-click reset)
+          "SUPER,mouse:274,exec,pypr zoom"
 
-          # EasyMotion
-          # "SUPER, TAB, easymotion, action:hyprctl dispatch focuswindow address:{}"
-          # Optional: Customize easymotion behavior
-          # "SUPER SHIFT, z, easymotion, action:hyprctl dispatch killactive"  # Kill window
-          # "SUPER, x, easymotion, action:hyprctl dispatch movetoworkspace {}" # Move to WS
+          # Screen annotation (gromit-mpx live drawing)
+          "SUPER,A,exec,gromit-mpx --toggle"
+          "SUPER SHIFT,A,exec,gromit-mpx --clear"
+          "SUPER CTRL,A,exec,gromit-mpx --undo"
+        ];
+
+        # Screen zoom (repeat for smooth continuous zoom)
+        binde = [
+          "SUPER,plus,exec,pypr zoom ++0.1"
+          "SUPER,minus,exec,pypr zoom --0.1"
         ];
 
         # Mouse bindings
@@ -514,6 +400,101 @@
         "$osdclient" =
           ''swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')"'';
       };
+      # Window rules (block format, required by Hyprland 0.55+)
+      # name = must be the first field in each block
+      extraConfig = ''
+        windowrule {
+          name = suppress-maximize
+          match:class = .*
+          suppress_event = maximize
+        }
+        windowrule {
+          name = global-opacity
+          match:class = .*
+          opacity = 0.97 0.9
+        }
+        windowrule {
+          name = xwayland-no-focus
+          match:class = ^$
+          match:title = ^$
+          match:xwayland = true
+          match:float = true
+          match:fullscreen = false
+          match:pin = false
+          no_focus = true
+        }
+        windowrule {
+          name = terminal-scroll
+          match:class = (Alacritty|kitty)
+          scroll_touchpad = 1.5
+        }
+        windowrule {
+          name = ghostty-scroll
+          match:class = com.mitchellh.ghostty
+          scroll_touchpad = 0.2
+        }
+        # Popup/context menus (empty class+title from Electron apps)
+        windowrule {
+          name = electron-popup
+          match:class = ^()$
+          match:title = ^()$
+          no_blur = true
+          opacity = 1.0 override
+        }
+        # Open-LLM-VTuber pet mode (XWayland)
+        windowrule {
+          name = vtuber-xwayland
+          match:class = ^(open-llm-vtuber)$
+          no_blur = true
+          no_shadow = true
+          opacity = 1.0 override
+          float = true
+          pin = true
+        }
+        # Open-LLM-VTuber pet mode (native Wayland)
+        windowrule {
+          name = vtuber-wayland
+          match:class = ^(electron)$
+          match:title = ^(Open-LLM-Vtuber)$
+          no_blur = true
+          no_shadow = true
+          opacity = 1.0 override
+          float = true
+          pin = true
+        }
+        # Gromit-mpx (screen annotation overlay)
+        windowrule {
+          name = gromit-noblur
+          match:class = ^(Gromit-mpx)$
+          no_blur = true
+          no_shadow = true
+          opacity = 1.0 override
+        }
+        # Anki
+        windowrule {
+          name = anki-opacity
+          match:class = ^(net.ankiweb.Anki)$
+          opacity = 1.0 override
+        }
+        # LibreWolf
+        windowrule {
+          name = librewolf-opacity
+          match:class = ^(LibreWolf)$
+          opacity = 1.0 override
+        }
+        # Okular
+        windowrule {
+          name = okular-opacity
+          match:class = ^(org.kde.okular)$
+          opacity = 1.0 override
+        }
+        windowrule {
+          name = anki-float
+          match:class = ^(net.ankiweb.Anki)$
+          match:title = negative:.*Anki$
+          float = true
+        }
+      '';
     };
   };
 }

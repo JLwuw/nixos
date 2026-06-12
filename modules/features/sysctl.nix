@@ -10,9 +10,6 @@ in
     # Workstations: 10 (responsiveness for interactive use)
     "vm.swappiness" = if isServer then 20 else 10;
     # ==================================================================
-    # Enable REISUB
-    "kernel.sysrq" = 1;
-    # ==================================================================
     # Detect MTU automatically
     # Prevents flakiness due to incorrect MTU assumptions
     "net.ipv4.tcp_mtu_probing" = 1;
@@ -29,6 +26,14 @@ in
     # ==================================================================
     # Allow services to bind to IP addresses even if the network interface for them hasn't finished booting yet
     "net.ipv4.ip_nonlocal_bind" = 1;
+    # ==================================================================
+    # Disable IPv6 privacy extensions on physical interface (server only)
+    # Mail server must use stable IPv6 address to avoid Spamhaus blocks
+    # Use lib.mkForce to override the default from network-interfaces.nix
+    "net.ipv6.conf.enp3s0.use_tempaddr" = lib.mkIf isServer (lib.mkForce 0);
+    # ==================================================================
+    # Enable REISUB
+    "kernel.sysrq" = 1;
     # ==================================================================
   };
 }

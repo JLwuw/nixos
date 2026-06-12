@@ -1,4 +1,6 @@
+{ pkgs, ... }:
 {
+  environment.systemPackages = [ pkgs.distrobox ];
   # Configure distrobox to mount required paths into all containers
   # /persist - Access to persistent btrfs subvolume
   # /nix/store - Read-only access to Nix store (required for distrobox entrypoint on NixOS)

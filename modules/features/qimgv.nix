@@ -1,5 +1,8 @@
+{ pkgs, ... }:
 {
   home-manager.users.user = {
+    home.packages = [ pkgs.qimgv ];
+
     xdg.mimeApps = {
       defaultApplications = {
         "image/tiff" = [ "qimgv.desktop" ];

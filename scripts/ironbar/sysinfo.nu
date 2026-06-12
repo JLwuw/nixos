@@ -1,6 +1,8 @@
 #!/usr/bin/env nu
+# @reference: modules/features/ironbar.nix
+# System info widget: CPU usage, memory, temperature, and battery (if present)
 
-# ─── CPU USAGE (delta from last run) ─────────────────────────────────────────────
+# CPU usage (delta from last run)
 let cpu_state_file = "/tmp/.cpu_stat_prev"
 
 let cpu_stats = (open /proc/stat | lines | first | split row ' ' | skip 1 | filter {|x| $x != ""} | each {|x| $x | into int})
@@ -16,25 +18,25 @@ let cpu_pct = if ($cpu_state_file | path exists) {
     let du = ($used - $prev_used)
     if $dt > 0 { (100 * $du / $dt | into int) } else { 0 }
 } else {
-    0  # First run
+    0
 }
 
 $"($total) ($used)" | save -f $cpu_state_file
 
-# ─── MEMORY USAGE ────────────────────────────────────────────────────────────────
+# Memory usage
 let mem_total = (open /proc/meminfo | lines | find "MemTotal" | first | split row ' ' | filter {|x| $x != ""} | get 1 | into int)
 let mem_avail = (open /proc/meminfo | lines | find "MemAvailable" | first | split row ' ' | filter {|x| $x != ""} | get 1 | into int)
 let mem_used = ($mem_total - $mem_avail)
 let mem_pct = ($mem_used * 100 / $mem_total | into int)
 
-# ─── TEMPERATURE ─────────────────────────────────────────────────────────────────
+# Temperature
 let temp_c = if ("/sys/class/thermal/thermal_zone0/temp" | path exists) {
     ((open /sys/class/thermal/thermal_zone0/temp | into int) / 1000 | into int)
 } else {
     0
 }
 
-# ─── BATTERY STATUS ──────────────────────────────────────────────────────────────
+# Battery (laptop only)
 let battery_info = try {
     let upower_dev = (^upower -e | lines | find -r 'BAT|battery' | first | ansi strip)
     if ($upower_dev | is-empty) {
@@ -50,15 +52,13 @@ let battery_info = try {
     null
 }
 
-# ─── OUTPUT ──────────────────────────────────────────────────────────────────────
+# Output
 if ($battery_info | is-empty) {
-    # No battery - desktop
     print $"󰍛 ($cpu_pct)% 󰾆 ($mem_pct)% 󰔏 ($temp_c)°C"
 } else {
-    # Has battery - laptop
     let bat_icon = if $battery_info.state == "charging" {
         "󰂄"
-    } else if $battery_info.state == "fully-charged" {
+    } else if $battery_info.state == "fully-charged" or $battery_info.state == "not charging" {
         "󰁹"
     } else if $battery_info.pct >= 90 {
         "󰂂"

@@ -51,7 +51,7 @@
       };
     };
 
-    iconTheme = {
+    icons = {
       enable = true;
       dark = "WhiteSur-dark";
       light = "WhiteSur-light";
@@ -103,6 +103,10 @@
         name = "WhiteSur-Dark"; # or "WhiteSur-Light"
         package = pkgs.whitesur-gtk-theme;
       };
+      gtk4.theme = {
+        name = "WhiteSur-Dark";
+        package = pkgs.whitesur-gtk-theme;
+      };
     };
     qt = {
       enable = true;
@@ -116,6 +120,10 @@
       qt6Packages.qtstyleplugin-kvantum # Qt6 apps
       whitesur-gtk-theme
       whitesur-kde # gtk theme has kvantum files for some reason, ehh just in case tho
+      whitesur-icon-theme
+      lxappearance # GTK theme switcher GUI
+      libsForQt5.qt5ct # Qt5 settings GUI
+      qt6Packages.qt6ct # Qt6 settings GUI
     ];
   };
 

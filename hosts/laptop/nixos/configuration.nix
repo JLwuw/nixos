@@ -1,6 +1,6 @@
 # `pkgs`, `lib`, `config` are automatically injected in all modules
 # @source: https://nixos.org/manual/nixos/stable/options
-{ modulesPath, ... }:
+{ modulesPath, version, ... }:
 {
   imports = [
     # Enables non-free firmware
@@ -12,6 +12,9 @@
     ./packages.nix
   ];
 
+  # Compatibility flag for stateful services (e.g. database migrations).
+  # Set to the NixOS version at install time. Do NOT bump on upgrades.
+  # @source: https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.11";
   # Set hostname (required for feature modules to work)
   networking.hostName = "laptop";
@@ -25,7 +28,7 @@
     users.user = {
       home.username = "user";
       home.homeDirectory = "/home/user";
-      home.stateVersion = "25.11";
+      home.stateVersion = version;
     };
   };
 }

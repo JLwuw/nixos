@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   hostname = config.networking.hostName;
   # Check if marker file exists
@@ -14,6 +14,8 @@ in {
     enable = lanzabooteEnabled;
     pkiBundle = "/var/lib/sbctl";
   };
+
+  environment.systemPackages = [ pkgs.sbctl ];
 
   # Persist Secure Boot keys when Lanzaboote is enabled
   environment.persistence."/persist".directories = [

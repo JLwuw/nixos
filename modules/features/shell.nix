@@ -25,12 +25,8 @@
       vi = "nvim";
       # fastfetch
       ff = "fastfetch";
-      # opencode
-      oc = "opencode";
       # difftastic
       dt = "difft --skip-unchanged";
-      # tern
-      nt = "nix develop path:. --command -- tern";
     };
     home.sessionVariables = {
       EDITOR = "nvim";

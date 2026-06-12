@@ -9,6 +9,8 @@ let
 in
 {
   home-manager.users.user = {
+    home.packages = [ pkgs.kdePackages.okular ];
+
     # Window/Shell Settings
     home.file.".config/okularrc".text = ini {
       "Desktop Entry" = {

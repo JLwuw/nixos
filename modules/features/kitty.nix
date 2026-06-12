@@ -1,21 +1,8 @@
-{ config, pkgs, lib, ... }:
-let
-  # Patch kitty to disable Wayland color management protocol
-  # Workaround for wp_color_manager_v1 "CM Surface already exists" error
-  # See: https://github.com/kovidgoyal/kitty/issues/9030
-  kitty-patched = pkgs.kitty.overrideAttrs (oldAttrs: {
-    postPatch = (oldAttrs.postPatch or "") + ''
-      # Disable color management support to work around Hyprland bug
-      substituteInPlace glfw/wl_window.c \
-        --replace-fail "if (_glfw.wl.color_manager.has_needed_capabilities) {" \
-                       "if (false && _glfw.wl.color_manager.has_needed_capabilities) {"
-    '';
-  });
-in {
+{ pkgs, ... }:
+{
   home-manager.users.user = {
     programs.kitty = {
       enable = true;
-      package = kitty-patched;
 
       # Font settings (family and size comes from Stylix)
       # font.size = ...;
@@ -119,8 +106,8 @@ in {
         # Special text input
         "shift+enter" = "send_text all \\x1b[13;2u";
         "ctrl+enter" = "send_text all \\x1b[13;5u";
-        "kitty_mod+n" = "send_text normal  tern-core\\n";
-        "kitty_mod+shift+n" = "send_text normal  tern-core -s\\n";
+        "kitty_mod+n" = "send_text normal  tern\\n";
+        "kitty_mod+shift+n" = "send_text normal  tern -s\\n";
 
         # Disabled mappings
         "ctrl+tab" = "no_op";
