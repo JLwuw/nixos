@@ -10,17 +10,4 @@
 
   # Add user to podman group for rootless containers
   users.users.user.extraGroups = [ "podman" ];
-
-  # Persist Podman data (containers, images, volumes)
-  environment.persistence."/persist".directories = [
-    "/var/lib/containers" # Containers
-    "/etc/containers/networks" # Networks
-  ];
-
-  # Persist rootless Podman data (user containers)
-  home-manager.users.user.home.persistence."/persist" = {
-    directories = [
-      ".local/share/containers" # Rootless container storage (images, containers, volumes)
-    ];
-  };
 }

@@ -1,7 +1,8 @@
 # @dependencies: shell.nix (provides programs.nushell.enable for yazi nushell integration)
 {
   ...
-}: {
+}:
+{
   home-manager.users.user = {
     programs.yazi = {
       enable = true;

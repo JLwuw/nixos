@@ -1,10 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   hostname = config.networking.hostName;
   # Check if marker file exists
   lanzabootePath = toString ./. + "/../../${hostname}/lanzaboote-enabled";
   lanzabooteEnabled = builtins.pathExists lanzabootePath;
-in {
+in
+{
   # Enable systemd-boot if lanzaboote is NOT enabled
   # Using mkForce as per Lanzaboote documentation
   boot.loader.systemd-boot.enable = lib.mkForce (!lanzabooteEnabled);
@@ -16,9 +22,4 @@ in {
   };
 
   environment.systemPackages = [ pkgs.sbctl ];
-
-  # Persist Secure Boot keys when Lanzaboote is enabled
-  environment.persistence."/persist".directories = [
-    "/var/lib/sbctl"
-  ];
 }

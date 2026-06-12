@@ -34,7 +34,17 @@
           # Enable bulk rename (thunar must be installed)
           # "thunar -B" as byte array (dconf expects `ay` type)
           # @source(lib.hm): https://home-manager.dev/manual/23.05/index.html
-          bulk-rename-tool = lib.hm.gvariant.mkArray lib.hm.gvariant.type.uchar [ 116 104 117 110 97 114 32 45 66 ];
+          bulk-rename-tool = lib.hm.gvariant.mkArray lib.hm.gvariant.type.uchar [
+            116
+            104
+            117
+            110
+            97
+            114
+            32
+            45
+            66
+          ];
           thumbnail-limit = lib.hm.gvariant.mkUint64 104857600;
         };
         # @source: https://forums.linuxmint.com/viewtopic.php?t=431474

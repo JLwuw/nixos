@@ -90,9 +90,12 @@
         "kitty_mod+shift+right" = "set_background_opacity +0.03";
 
         # Overlays and hints
-        "kitty_mod+f" = "launch --type=overlay --stdin-source=@screen_scrollback fzf --color 'bg+:#303030,gutter:-1' --no-sort --no-mouse --exact -i --tac";
-        "kitty_mod+p" = "launch --type=overlay --stdin-source=@screen_scrollback nvim +'silent! g/^$/d' +'normal G' +'normal zb' +'setf log' +'set showmode' +':%s/\\s\\+$//e'";
-        "kitty_mod+m" = "launch --type=overlay --stdin-source=@screen_scrollback nvim +'normal G' +'normal zb' +'setf log' +'set showmode' +':%s/\\s\\+$//e'";
+        "kitty_mod+f" =
+          "launch --type=overlay --stdin-source=@screen_scrollback fzf --color 'bg+:#303030,gutter:-1' --no-sort --no-mouse --exact -i --tac";
+        "kitty_mod+p" =
+          "launch --type=overlay --stdin-source=@screen_scrollback nvim +'silent! g/^$/d' +'normal G' +'normal zb' +'setf log' +'set showmode' +':%s/\\s\\+$//e'";
+        "kitty_mod+m" =
+          "launch --type=overlay --stdin-source=@screen_scrollback nvim +'normal G' +'normal zb' +'setf log' +'set showmode' +':%s/\\s\\+$//e'";
         "kitty_mod+i" = "kitten hints --type word --program -";
         "kitty_mod+y" = "kitten hints --type path --program -";
 

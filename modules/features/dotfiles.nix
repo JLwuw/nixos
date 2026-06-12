@@ -8,21 +8,20 @@
   home-manager.users.user =
     { config, ... }:
     let
-      dotfilesPath = "/persist/home/user/dotfiles";
-      neovimPath = "/persist/home/user/nvim";
+      dotfilesPath = "/home/user/dotfiles";
+      neovimPath = "/home/user/nvim";
     in
     {
       # Out-of-store symlinks for configs with their own DSL
       # These are NOT copied to /nix/store - they remain mutable
       xdg.configFile = {
         "nvim".source = config.lib.file.mkOutOfStoreSymlink "${neovimPath}";
-        "nemo".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/nemo-actions";
         "ironbar/style.css".source =
           config.lib.file.mkOutOfStoreSymlink "${dotfilesPath}/ironbar/style.css";
       };
     };
 
   systemd.tmpfiles.rules = [
-    "d /persist/home/user 0755 user users -"
+    "d /home/user 0755 user users -"
   ];
 }

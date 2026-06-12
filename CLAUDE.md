@@ -98,7 +98,7 @@ Dendritic Module Pattern
 ------------------------
 
 Feature modules in modules/features/ are auto-imported via default.nix. Each module
-contains service config, firewall rules (nftables), persistence, SOPS secrets, or home-manager
+contains service config, firewall rules (nftables), SOPS secrets, or home-manager
 config
 
 Module applicability controlled via flake.nix EXCLUSION LISTS on flake.nix!
@@ -109,8 +109,6 @@ Host-specific packages go in: hosts/{host}/nixos/packages.nix
 
 Reference: flake.nix for excludedFeatures lists per host
 Reference: modules/features/default.nix for auto-import logic
-
-Never use lib.mkIf to check persistence enable state (causes infinite recursion).
 
 Secrets Management
 ------------------
@@ -138,7 +136,6 @@ Secure Boot
 -----------
 
 Lanzaboote + sbctl for UEFI Secure Boot.
-Keys stored in /persist/secureboot.
 Reference: modules/features/lanzaboote.nix
 
 Dotfiles
@@ -148,7 +145,7 @@ Hybrid approach:
 - Native Nix for programs with good home-manager support (hyprland, waybar, git)
 - Out-of-store symlinks for programs with their own DSL (nvim, lf)
 
-Dotfiles location: /persist/home/user/dotfiles (git repository)
+Dotfiles location: /home/user/dotfiles (git repository)
 Symlinks created via config.lib.file.mkOutOfStoreSymlink
 Reference: modules/features/dotfiles.nix
 
@@ -205,7 +202,6 @@ Certificate: mail.yhkze.net (separate from wildcard cert)
 Configuration:
 - Domain: yhkze.net
 - Virtual mailboxes and aliases configured declaratively
-- Persistent mail storage in /persist
 - Reference: modules/features/mailserver.nix
 
 Authentication (Authelia)
@@ -222,7 +218,7 @@ Features:
 URL: auth.yhkze.net
 
 Configuration:
-- Storage backend: SQLite (persistent)
+- Storage backend: SQLite
 - TOTP window: 1 minute
 - Session expiry: configurable per application
 - CORS support for OIDC flows
@@ -247,7 +243,7 @@ URL: ldap.yhkze.net (web UI, protected by Authelia)
 LDAP port: 389 (local network only)
 
 Configuration:
-- Database: SQLite (persistent)
+- Database: SQLite
 - Admin user: configured via module
 - User and group creation declarative
 - Reference: modules/features/lldap.nix

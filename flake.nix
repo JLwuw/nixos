@@ -10,7 +10,11 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence.url = "github:nix-community/impermanence";
+    resources.url = "git+https://codeberg.org/yuuhikaze/resources";
+    hyprland-plugins-local = {
+      url = "github:yuuhikaze/hyprland-plugins/feat/hyprfocus-granular-control";
+      flake = false;
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -93,7 +97,6 @@
               nixpkgs.config = nixpkgsConfig;
             }
             (./hosts + "/${host}/nixos/configuration.nix")
-            inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.disko.nixosModules.disko
             inputs.lanzaboote.nixosModules.lanzaboote
@@ -113,31 +116,72 @@
           host = "laptop";
           extraModules = [ inputs.stylix.nixosModules.stylix ];
           includedFeatures = [
-            "appimage.nix" "audio.nix" "bluetooth.nix"
-            "bootloader.nix" "direnv.nix" "distrobox.nix"
-            "dotfiles.nix" "facter.nix" "fail2ban.nix"
-            "fastfetch.nix" "flatpak.nix" "fonts.nix"
-            "gammastep.nix" "garbage-collector.nix" "geoclue.nix"
-            "git.nix" "hardware.nix" "hyprland.nix"
-            "hyprlock.nix" "ironbar.nix" "keepassxc.nix"
-            "keyring.nix" "kitty.nix" "lanzaboote.nix"
-            "locale.nix" "locate.nix" "mpv.nix"
-            "nemo.nix" "networking.nix" "nix-ld.nix"
-            "nix-settings.nix" "obs.nix" "ocr.nix"
-            "okular.nix" "openssh.nix" "podman.nix"
-            "power.nix" "printing.nix" "qimgv.nix"
-            "security.nix" "shell.nix" "sops.nix"
-            "starship.nix" "stylix.nix" "syncthing.nix"
-            "sysctl.nix" "tmpfiles.nix" "users.nix"
-            "vicinae.nix" "xdg.nix" "yazi.nix"
+            "appimage.nix"
+            "audio.nix"
+            "bluetooth.nix"
+            "bootloader.nix"
+            "direnv.nix"
+            "distrobox.nix"
+            "dotfiles.nix"
+            "facter.nix"
+            "fail2ban.nix"
+            "fastfetch.nix"
+            "flatpak.nix"
+            "fonts.nix"
+            "gammastep.nix"
+            "garbage-collector.nix"
+            "geoclue.nix"
+            "git.nix"
+            "hardware.nix"
+            "hyprland.nix"
+            "hyprlock.nix"
+            "ironbar.nix"
+            "keepassxc.nix"
+            "keyring.nix"
+            "kitty.nix"
+            "lanzaboote.nix"
+            "locale.nix"
+            "locate.nix"
+            "mpv.nix"
+            "nemo.nix"
+            "networking.nix"
+            "nix-ld.nix"
+            "nix-settings.nix"
+            "obs.nix"
+            "ocr.nix"
+            "okular.nix"
+            "openssh.nix"
+            "podman.nix"
+            "power.nix"
+            "printing.nix"
+            "qimgv.nix"
+            "security.nix"
+            "shell.nix"
+            "sops.nix"
+            "starship.nix"
+            "stylix.nix"
+            # "syncthing.nix"
+            "sysctl.nix"
+            "tmpfiles.nix"
+            "users.nix"
+            "vicinae.nix"
+            "xdg.nix"
+            "yazi.nix"
             "zoxide.nix"
           ];
+          extraSpecialArgs = {
+            inherit (inputs) hyprland-plugins-local;
+          };
         };
       };
 
       devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
-        buildInputs = with nixpkgs.legacyPackages.${system}; [
-          nixfmt
+        inputsFrom = [
+          (inputs.resources.outputs.devShells.${system}.docs-converters {
+            withPandoc = true;
+            withStructurizr = true;
+          })
+          inputs.resources.outputs.devShells.${system}.docs-templates
         ];
       };
     };

@@ -17,18 +17,11 @@
 
     # B2 repository format: b2:<bucket-name>:<repository-path>
     # Example: b2:my-backup-bucket:server-backups
-    repository = "b2:yhkze-infra-backups:nixos";
+    repository = "PLACEHOLDER";
 
     # Paths to backup
     paths = [
-      "/mnt/atlas" # General data
-      "/persist/home/user/nixos" # NixOS configuration
-      "/persist/home/user/dotfiles" # Dotfiles
-      "/persist/home/user/nvim" # Neovim configuration
-      "/home/user/Sync" # User folders
-      "/var/vmail" # Mail Inbox
-      "/mnt/aether/network/opencloud/users/ce926201-fa4b-4bd4-a6a1-4883b19a6873" # SuperProductivity Data
-      "/mnt/aether/network/opencloud/users/f86a3a6b-6ee4-4ea1-9c5e-a3ef74efea61" # Marc Brunet - ART School
+      # Define your back up paths here!
     ];
 
     # Exclusion patterns (gitignore-like syntax)
@@ -99,20 +92,4 @@
     passwordFile = config.sops.secrets."restic/password".path;
     environmentFile = config.sops.secrets."restic/b2-credentials".path;
   };
-
-  # Persist restic cache across reboots
-  environment.persistence."/persist".directories = [
-    {
-      directory = "/var/lib/restic";
-      user = "root";
-      group = "root";
-      mode = "0700";
-    }
-    {
-      directory = "/var/cache/restic";
-      user = "root";
-      group = "root";
-      mode = "0700";
-    }
-  ];
 }

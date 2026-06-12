@@ -1,5 +1,6 @@
 {
   pkgs,
+  hyprland-plugins-local,
   ...
 }:
 {
@@ -67,7 +68,9 @@
       systemd.enable = true;
       configType = "hyprlang"; # Lua mode broken in HM 26.05 (hyphenated keys)
       plugins = [
-        pkgs.hyprlandPlugins.hyprfocus
+        (pkgs.hyprlandPlugins.hyprfocus.overrideAttrs (_: {
+          src = "${hyprland-plugins-local}/hyprfocus";
+        }))
       ];
       settings = {
         "$terminal" = "kitty";
@@ -256,7 +259,7 @@
           "SUPER SHIFT,t,pin," # Toggle keep on top
           "SUPER,p,pseudo," # Pseudotile (restored)
           # "SUPER,V,togglefloating," # Toggle floating
-          "SUPER CTRL,SPACE,togglefloating," #Floating toggle
+          "SUPER CTRL,SPACE,togglefloating," # Floating toggle
           "SUPER,w,fullscreen,1" # Maximize
           "SUPER,m,movetoworkspacesilent,special" # Minimize to special workspace
 
@@ -320,7 +323,6 @@
           # Window cycling (ALT + TAB - system-wide)
           "ALT,Tab,cyclenext"
           "ALT SHIFT,Tab,cyclenext,prev"
-
 
           # System utilities
           ",XF86Calculator,exec,gnome-calculator"

@@ -106,9 +106,9 @@ BOOTSTRAP=1 nix run nixpkgs#nixos-anywhere \
 Set up SSH hosts
 
 ```bash
-mkdir -p /mnt/persist/etc/secrets/initrd
-ssh-keygen -t ed25519 -f /mnt/persist/etc/secrets/initrd/ssh_host_ed25519_key -N "" -C ""
-chmod 400 /mnt/persist/etc/secrets/initrd/*
+mkdir -p /mnt/etc/secrets/initrd
+ssh-keygen -t ed25519 -f /mnt/etc/secrets/initrd/ssh_host_ed25519_key -N "" -C ""
+chmod 400 /mnt/etc/secrets/initrd/*
 ```
 
 :::
@@ -118,8 +118,8 @@ chmod 400 /mnt/persist/etc/secrets/initrd/*
 Set Age private keys for sops-nix
 
 ```bash
-mkdir -p /mnt/persist/var/keys
-vim /mnt/persist/var/keys/sops-nix
+mkdir -p /mnt/var/keys
+vim /mnt/var/keys/sops-nix
 ```
 
 :::

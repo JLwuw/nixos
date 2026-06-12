@@ -28,7 +28,7 @@
       # vistafonts # Vista/7 fonts
 
       # Recommended additional fonts
-      inter  # Modern UI font
+      inter # Modern UI font
 
       # NSW ACT Foundation font (educational)
       # This might need to be manually installed if not in nixpkgs
@@ -49,9 +49,20 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        serif = [ "Noto Serif" "DejaVu Serif" ];
-        sansSerif = [ "Inter" "Noto Sans" "DejaVu Sans" ];
-        monospace = [ "JetBrainsMono Nerd Font" "Fantasque Sans Mono" "DejaVu Sans Mono" ];
+        serif = [
+          "Noto Serif"
+          "DejaVu Serif"
+        ];
+        sansSerif = [
+          "Inter"
+          "Noto Sans"
+          "DejaVu Sans"
+        ];
+        monospace = [
+          "JetBrainsMono Nerd Font"
+          "Fantasque Sans Mono"
+          "DejaVu Sans Mono"
+        ];
         emoji = [ "Noto Color Emoji" ];
       };
     };
