@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 # @reference: modules/features/shell.nix
 
-const FLAKE_DIR = "/persist/home/user/nixos"
+const FLAKE_DIR = "/home/user/nixos"
 
 def main [] {
   cd $FLAKE_DIR

@@ -22,7 +22,8 @@ let
   toImport = builtins.filter (name: builtins.elem name selected) validNames;
 in
 {
-  imports = lib.throwIf (unknown != [ ])
-    "modules/features: unknown feature(s) requested: ${lib.concatStringsSep ", " unknown}"
-    (map (name: ./. + "/${name}") toImport);
+  imports =
+    lib.throwIf (unknown != [ ])
+      "modules/features: unknown feature(s) requested: ${lib.concatStringsSep ", " unknown}"
+      (map (name: ./. + "/${name}") toImport);
 }

@@ -64,7 +64,7 @@
     # Virtualisation
     docker-compose # multi-container Docker orchestration
   ];
-  
+
   # User packages installed among all hosts
-  homePackages = with pkgs; [];
+  homePackages = with pkgs; [ ];
 }

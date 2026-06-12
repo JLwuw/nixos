@@ -12,13 +12,4 @@
 
   # PAM integration for automatic keyring unlock on login
   security.pam.services.login.enableGnomeKeyring = true;
-
-  home-manager.users.user = {
-    # Persist keyring data
-    home.persistence."/persist" = {
-      directories = [
-        ".local/share/keyrings" # Keyring credentials
-      ];
-    };
-  };
 }

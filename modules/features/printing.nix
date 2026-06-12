@@ -1,4 +1,10 @@
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   # Enable CUPS for printing
   services.printing = {
     enable = true;
@@ -20,13 +26,16 @@
   hardware.sane = {
     enable = true;
     extraBackends = with pkgs; [
-      sane-airscan  # Network scanner support
+      sane-airscan # Network scanner support
     ];
   };
 
   # Add user to scanner and printer groups
   users.users.user = {
-    extraGroups = [ "lp" "scanner" ];
+    extraGroups = [
+      "lp"
+      "scanner"
+    ];
   };
 
   # Firewall rules for network printing/scanning (optional)
@@ -39,12 +48,5 @@
   home-manager.users.user.home.packages = with pkgs; [
     system-config-printer # printer configuration GUI
     simple-scan # document scanning GUI
-  ];
-
-  # Persist CUPS printer state
-  # Only persist /var/lib/cups (contains mutable state: printers, jobs, etc.)
-  # /etc/cups is managed by NixOS as a symlink to the store - don't persist it
-  environment.persistence."/persist".directories = [
-    "/var/lib/cups"
   ];
 }

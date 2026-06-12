@@ -11,7 +11,13 @@
       type = "filesystem";
       format = "vfat";
       mountpoint = "/efi";
-      mountOptions = [ "defaults" "noexec" "nosuid" "nodev" "umask=0077" ];
+      mountOptions = [
+        "defaults"
+        "noexec"
+        "nosuid"
+        "nodev"
+        "umask=0077"
+      ];
     };
   };
   swapContentPreset = {

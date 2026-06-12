@@ -1,6 +1,7 @@
 {
   ...
-}: {
+}:
+{
   # Vicinae launcher daemon
   home-manager.users.user = {
     programs.vicinae = {

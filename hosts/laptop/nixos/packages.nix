@@ -1,9 +1,17 @@
-{ pkgs, lib, bootstrap ? false, ... }:
+{
+  pkgs,
+  lib,
+  bootstrap ? false,
+  ...
+}:
 let
   corePkgs = import ../../../values/packages/core.nix { inherit pkgs; };
   workstationPkgs =
     if bootstrap then
-      { systemPackages = [ ]; homePackages = [ ]; }
+      {
+        systemPackages = [ ];
+        homePackages = [ ];
+      }
     else
       import ../../../values/packages/workstation.nix { inherit pkgs; };
 in

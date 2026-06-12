@@ -7,7 +7,7 @@
 # to the full configuration on the installed disk.
 #
 # Modules listed here must be sufficient to:
-#   - boot the host (bootloader, hardware, locale, impermanence, tmpfiles)
+#   - boot the host (bootloader, hardware, locale, tmpfiles)
 #   - reach the host over SSH on its LAN address (networking, openssh)
 #   - log in as `user` with the SOPS-backed password (sops, users, shell)
 #   - run nixos-rebuild against the full flake (nix-settings for substituters,

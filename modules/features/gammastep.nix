@@ -16,8 +16,8 @@
 
       # Temperature settings
       temperature = {
-        day = 6500;    # Daylight temperature (Kelvin)
-        night = 3500;  # Night temperature (Kelvin)
+        day = 6500; # Daylight temperature (Kelvin)
+        night = 3500; # Night temperature (Kelvin)
       };
 
       # Time settings (optional, uses location if not set)

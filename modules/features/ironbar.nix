@@ -1,8 +1,8 @@
 { pkgs, ... }:
 let
-  sysinfo-script = pkgs.writeScriptBin "sysinfo"
-    (builtins.readFile ../../scripts/ironbar/sysinfo.nu);
-in {
+  sysinfo-script = pkgs.writeScriptBin "sysinfo" (builtins.readFile ../../scripts/ironbar/sysinfo.nu);
+in
+{
   environment.systemPackages = with pkgs; [ ironbar ];
 
   home-manager.users.user = {
